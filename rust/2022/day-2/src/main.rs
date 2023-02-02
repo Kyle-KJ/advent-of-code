@@ -7,47 +7,40 @@ fn main() {
     // Opponents Choices:
     // A = Rock, B = Paper, C = Scissors
 
-    // My Choices:
-    // X = Rock = 1, Y = Paper = 2, Z = Scissors = 3
-
     // Read file
-    // For each line, determine outcome and score
-
     let file: File = File::open("input.txt").expect("Couldn't open file.");
-
     let buf_reader: BufReader<File> = BufReader::new(file);
 
-    let mut total_points: u32 = 0;
+    // Initialise output variables
+    let mut total_points_one: u32 = 0;
+    let mut total_points_two: u32 = 0;
 
     for line in buf_reader.lines() {
         
         let mut line_data: String = line.expect("Couldn't read line.");
 
-        // line_data.trim();
-
+        // Remove spaces from string
         line_data.retain(|c| c != ' ');
 
-        // Take first and last value from string
-
-        //let opp_choice: char = &line_data.get(0).unwrap().expect("");
-        //let my_choice: char = &line_data.get(1);
-
+        // Extract values from string
         let my_choice: char = line_data.pop().unwrap();
         let opp_choice: char = line_data.pop().unwrap();
 
+        total_points_one += rock_paper_scissors_one(opp_choice, my_choice);
+        total_points_two += rock_paper_scissors_two(opp_choice, my_choice);
 
-        // Calculate winner / points
-
-        total_points += rock_paper_scissors(opp_choice, my_choice);
-        
     }
 
-    println!("Total Points: {}", total_points);
+    println!("Total Points (Part 1): {}", total_points_one);
+    println!("Total Points (Part 2): {}", total_points_two);
 
 }
 
-fn rock_paper_scissors(opp_choice: char, my_choice: char) -> u32 {
-    // Initialise points total
+fn rock_paper_scissors_one(opp_choice: char, my_choice: char) -> u32 {
+    
+    // Part 1 Logic
+    // X = Rock = 1, Y = Paper = 2, Z = Scissors = 3
+
     let mut points: u32 = 0;
 
     match my_choice {
@@ -75,6 +68,48 @@ fn rock_paper_scissors(opp_choice: char, my_choice: char) -> u32 {
                 'A' => (),          // Loss
                 'B' => points += 6, // Win
                 'C' => points += 3, // Draw
+                _ => ()
+            }
+        },
+        _ => ()
+    };
+
+    points
+
+}
+
+fn rock_paper_scissors_two(opp_choice: char, my_choice: char) -> u32 {
+
+    // Part 2 Logic
+    // X = Lose, Y = Draw, Z = Win
+
+    let mut points: u32 = 0;
+
+    match my_choice {
+        'X' => {    // Lose
+            points += 0;
+            match opp_choice {
+                'A' => points += 3, // Scissors
+                'B' => points += 1, // Rock
+                'C' => points += 2, // Paper
+                _ => ()
+            }
+        },
+        'Y' => {    // Draw
+            points += 3;
+            match opp_choice {
+                'A' => points += 1, // Rock
+                'B' => points += 2, // Paper
+                'C' => points += 3, // Scissors
+                _ => ()
+            }
+        },
+        'Z' => {    // Win
+            points += 6;
+            match opp_choice {
+                'A' => points += 2, // Paper
+                'B' => points += 3, // Scissors
+                'C' => points += 1, // Rock
                 _ => ()
             }
         },
