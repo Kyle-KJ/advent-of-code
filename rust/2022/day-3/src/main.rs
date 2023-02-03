@@ -53,18 +53,76 @@ fn main() {
     let mut total: u32 = 0;
 
     for letter in repeated_letters {
-        let mut char_int: u32 = u32::from(letter);
-        //println!("Letter: {}", letter);
-        if letter.is_uppercase() {
-            char_int -= 38;
-        }
-        else if letter.is_lowercase() {
-            char_int -= 96;
-        }
-        //println!("Value: {}", char_int);
-        total += char_int;
+        total += letter_to_value(letter);
     }
 
     println!("Total Sum: {}", total);
 
+
+    // Part 2
+
+    // Group backpacks into threes and search for a common letter
+
+    let mut group_count: u8 = 0;
+
+    let mut backpack_groups: Vec<Vec<&str>> = Vec::new();
+
+    let mut backpack_group: Vec<&str> = Vec::new();
+
+    for backpack in backpacks.iter() {
+        group_count += 1;
+        backpack_group.push(backpack);
+        
+        if group_count == 3 {
+            //println!("Backpacks Grouped: {:?}", backpack_group);
+            backpack_groups.push(backpack_group);
+            backpack_group = Vec::new();
+            group_count = 0;
+        }
+    }
+
+    //println!("All Groups: {:?}", backpack_groups);
+
+    //let mut repeated_group_letter: Vec<char> = Vec::new();
+
+    let mut total_2: u32 = 0;
+
+    for group in backpack_groups.iter() {
+        'forloop2: for letter in group[0].chars() {
+            match group[1].find(letter) {
+                None => (),
+                Some(_) => {
+                    match group[2].find(letter) {
+                        None => (),
+                        Some(_) => {
+                            total_2 += letter_to_value(letter);
+                            break 'forloop2
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    println!("Total Sum (pt 2): {}", total_2);
+
+}
+
+fn letter_to_value(letter: char) -> u32 {
+    let mut char_int: u32 = u32::from(letter);
+    //println!("Letter: {}", letter);
+    
+    // Convert letter to value by manipulating unicode number
+    // a-z (1-26)
+    if letter.is_lowercase() {
+        char_int -= 96;
+    }
+    // A-Z (27-52)
+    else if letter.is_uppercase() {
+        char_int -= 38;
+    };
+
+    //println!("Value: {}", char_int);
+
+    char_int
 }
